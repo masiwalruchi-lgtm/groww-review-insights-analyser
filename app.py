@@ -7,80 +7,174 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("📊 Groww App Review Insights Analyser")
+# -----------------------------
+# Custom CSS
+# -----------------------------
+st.markdown("""
+<style>
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1400px;
+}
 
-st.write(
-    "Turn recent app-store reviews into a weekly product pulse "
-    "for Product, Growth and Support teams."
-)
+.hero {
+    padding: 1.3rem 0 0.8rem 0;
+}
 
-st.info(
-    "Upload a CSV containing public app reviews. "
-    "No usernames, emails or user IDs should be included."
-)
+.hero-small {
+    letter-spacing: 0.25rem;
+    color: #64748b;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
 
-uploaded_file = st.file_uploader(
-    "Upload Reviews CSV",
-    type=["csv"]
-)
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-top: 0.5rem;
+    margin-bottom: 0.7rem;
+}
 
-if uploaded_file is not None:
+.hero-subtitle {
+    font-size: 1.05rem;
+    color: #475569;
+    max-width: 1000px;
+}
 
-    df = pd.read_csv(uploaded_file)
+.feature-card {
+    background: #f8fbff;
+    border: 1px solid #e6edf5;
+    border-radius: 18px;
+    padding: 1rem;
+    min-height: 120px;
+}
 
-    required_columns = ["rating", "title", "text", "date"]
+.feature-icon {
+    font-size: 1.8rem;
+}
 
-    if all(column in df.columns for column in required_columns):
+.feature-title {
+    font-weight: 700;
+    margin-top: 0.4rem;
+}
 
-        st.success("✅ Reviews uploaded successfully!")
+.feature-text {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+}
 
-        # Convert date column
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+.upload-box {
+    background: linear-gradient(135deg, #f8fbff 0%, #f5fff9 100%);
+    border: 1px solid #dbeafe;
+    border-radius: 22px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
 
-        # Basic metrics
-        col1, col2, col3 = st.columns(3)
+.info-card {
+    background: #ffffff;
+    border: 1px solid #e6edf5;
+    border-radius: 18px;
+    padding: 1rem;
+    min-height: 125px;
+}
 
-        with col1:
-            st.metric("Reviews", len(df))
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+}
 
-        with col2:
-            st.metric(
-                "Average Rating",
-                round(df["rating"].mean(), 2)
-            )
+.quote-box {
+    background: linear-gradient(90deg, #f0fdf4, #eff6ff);
+    border-radius: 18px;
+    padding: 1.2rem;
+    border: 1px solid #dcfce7;
+}
 
-        with col3:
-            st.metric(
-                "Date Range",
-                f"{df['date'].min().date()} → {df['date'].max().date()}"
-            )
+.small-muted {
+    color: #64748b;
+    font-size: 0.88rem;
+}
+</style>
+""", unsafe_allow_html=True)
 
-        st.subheader("Review Preview")
+# -----------------------------
+# Sidebar
+# -----------------------------
+with st.sidebar:
+    st.markdown("## 🟢 Groww")
+    st.caption("Review Insights Analyser")
 
-        st.dataframe(
-            df[["rating", "title", "text", "date"]].head(20),
-            use_container_width=True
-        )
+    st.markdown("---")
 
-        st.divider()
+    st.markdown("### Navigation")
+    st.write("🏠 Home")
+    st.write("📊 Review Analysis")
+    st.write("🧠 Weekly Pulse")
+    st.write("✉️ Email Draft")
+    st.write("🔒 Privacy")
 
-        st.subheader("🤖 AI Review Analysis")
+    st.markdown("---")
 
-        st.write(
-            "The next step will group these reviews into themes, "
-            "identify representative user quotes and generate "
-            "product action ideas."
-        )
+    st.info(
+        "Use only public app reviews. "
+        "Do not upload usernames, emails, phone numbers or IDs."
+    )
 
-        if st.button("Analyse Reviews"):
-            st.info("AI analysis will be connected in the next step.")
+# -----------------------------
+# Hero
+# -----------------------------
+st.markdown("""
+<div class="hero">
+    <div class="hero-small">LISTEN • ANALYSE • IMPROVE</div>
+    <div class="hero-title">
+        Groww App Review <span style="color:#2563eb;">Insights</span>
+        <span style="color:#10b981;">Analyser</span>
+    </div>
+    <div class="hero-subtitle">
+        Turn recent app-store reviews into clear, actionable weekly insights
+        for Product, Growth and Support teams.
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-    else:
+# -----------------------------
+# Feature Cards
+# -----------------------------
+c1, c2, c3, c4 = st.columns(4)
 
-        st.error(
-            "CSV must contain these columns: "
-            "rating, title, text, date"
-        )
+with c1:
+    st.markdown("""
+    <div class="feature-card">
+        <div class="feature-icon">🔎</div>
+        <div class="feature-title">Find what users feel</div>
+        <div class="feature-text">Identify positive and negative feedback quickly.</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-else:
-    st.caption("Upload your Groww reviews CSV to begin.")
+with c2:
+    st.markdown("""
+    <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <div class="feature-title">Discover key themes</div>
+        <div class="feature-text">Group reviews into a maximum of five themes.</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with c3:
+    st.markdown("""
+    <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">Select real quotes</div>
+        <div class="feature-text">Surface representative user feedback without PII.</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with c4:
+    st.markdown("""
+   …
