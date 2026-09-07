@@ -177,4 +177,183 @@ with c3:
 
 with c4:
     st.markdown("""
-   …
+    <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title">Create action ideas</div>
+        <div class="feature-text">Turn recurring pain points into product actions.</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown(
+    '<div class="section-title">Upload Reviews CSV</div>',
+    unsafe_allow_html=True
+)
+
+left, right = st.columns([1.35, 1])
+
+with left:
+    uploaded_file = st.file_uploader(
+        "Upload your review dataset",
+        type=["csv"],
+        help="Required columns: rating, title, text, date"
+    )
+    st.caption("Accepted format: CSV")
+
+with right:
+    st.markdown("### 📄 Expected CSV Format")
+
+    sample_df = pd.DataFrame({
+        "rating": [5, 1, 4],
+        "title": ["", "", ""],
+        "text": [
+            "Very useful app",
+            "Customer support is slow",
+            "Easy to use"
+        ],
+        "date": [
+            "2026-09-01",
+            "2026-08-31",
+            "2026-08-30"
+        ]
+    })
+
+    st.dataframe(
+        sample_df,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.warning(
+        "Privacy rule: do not include usernames, emails, IDs "
+        "or other personally identifiable information."
+    )
+
+st.markdown(
+    '<div class="section-title">Why this helps product teams</div>',
+    unsafe_allow_html=True
+)
+
+b1, b2, b3, b4 = st.columns(4)
+
+with b1:
+    st.markdown("""
+    <div class="info-card">
+        <h4>👥 Understand sentiment</h4>
+        <div class="small-muted">See what matters most to users.</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with b2:
+    st.markdown("""
+    <div class="info-card">
+        <h4>⚙️ Prioritise fixes</h4>
+        <div class="small-muted">Spot recurring pain points worth solving.</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with b3:
+    st.markdown("""
+    <div class="info-card">
+        <h4>⏱️ Save time</h4>
+        <div class="small-muted">Analyse hundreds of reviews faster.</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with b4:
+    st.markdown("""
+    <div class="info-card">
+        <h4>❤️ Build better products</h4>
+        <div class="small-muted">Turn feedback into clear product actions.</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+if uploaded_file is not None:
+
+    df = pd.read_csv(uploaded_file)
+
+    required_columns = ["rating", "title", "text", "date"]
+
+    if all(col in df.columns for col in required_columns):
+
+        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+
+        st.success("✅ Reviews uploaded successfully!")
+
+        st.markdown(
+            '<div class="section-title">Dataset Overview</div>',
+            unsafe_allow_html=True
+        )
+
+        m1, m2, m3, m4 = st.columns(4)
+
+        with m1:
+            st.metric("Reviews", len(df))
+
+        with m2:
+            st.metric(
+                "Average Rating",
+                round(df["rating"].mean(), 2)
+            )
+
+        with m3:
+            st.metric(
+                "Newest Review",
+                df["date"].max().date()
+                if not df["date"].isna().all()
+                else "N/A"
+            )
+
+        with m4:
+            st.metric(
+                "Oldest Review",
+                df["date"].min().date()
+                if not df["date"].isna().all()
+                else "N/A"
+            )
+
+        st.markdown(
+            '<div class="section-title">Review Preview</div>',
+            unsafe_allow_html=True
+        )
+
+        st.dataframe(
+            df[["rating", "title", "text", "date"]].head(20),
+            use_container_width=True,
+            hide_index=True
+        )
+
+        st.markdown(
+            '<div class="section-title">AI Review Analysis</div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown("""
+        <div class="quote-box">
+            The AI workflow will identify the most important review themes,
+            select real user quotes and suggest actionable product ideas.
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.write("")
+
+        if st.button(
+            "✨ Analyse Reviews",
+            use_container_width=True
+        ):
+            st.info(
+                "The interface is ready. "
+                "We will connect the LLM analysis in the next step."
+            )
+
+    else:
+        st.error(
+            "Your CSV must contain these columns: "
+            "rating, title, text, date"
+        )
+
+st.markdown("---")
+
+st.caption(
+    "Built for learning and product-thinking purposes • "
+    "Public app-review data only"
+)
