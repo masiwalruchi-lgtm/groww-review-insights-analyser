@@ -1,6 +1,6 @@
 # Groww Weekly Review Pulse
 
-*Live app:* PASTE-YOUR-STREAMLIT-LINK-HERE
+*Live app:* https://groww-review-insights-analyser-y2wbbtimzerbvuxxt8wfid.streamlit.app/
 
 Turns 8-12 weeks of public App Store and Play Store reviews into a one-page weekly note and an email draft.
 
