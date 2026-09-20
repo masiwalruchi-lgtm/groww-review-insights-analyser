@@ -83,11 +83,11 @@ def scrub(text: str) -> str:
 # Without a key the app still works using rule-based logic.
 # ------------------------------------------------------------------
 def api_key():
-    key = os.getenv("ANTHROPIC_API_KEY")
+    key = os.getenv("GROQ_API_KEY")
     if key:
         return key
     try:
-        return st.secrets.get("ANTHROPIC_API_KEY")
+        return st.secrets.get("GROQ_API_KEY")
     except Exception:
         return None
 
@@ -97,20 +97,24 @@ def llm(prompt: str, max_tokens: int = 900):
     if not key:
         return None
     try:
-        import anthropic
+        import requests
 
-        client = anthropic.Anthropic(api_key=key)
-        r = client.messages.create(
-            model="claude-sonnet-5",
-            max_tokens=max_tokens,
-            messages=[{"role": "user", "content": prompt}],
+        r = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {key}"},
+            json={
+                "model": "llama-3.3-70b-versatile",
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": max_tokens,
+                "temperature": 0.3,
+            },
+            timeout=30,
         )
-        return r.content[0].text.strip()
-    except Exception as e:  # network, quota, bad key ...
+        r.raise_for_status()
+        return r.json()["choices"][0]["message"]["content"].strip()
+    except Exception as e:
         st.session_state["llm_error"] = str(e)[:200]
         return None
-
-
 def keyword_theme(text: str):
     scores = {t: len(p.findall(text)) for t, p in PATTERNS.items()}
     best = max(scores, key=scores.get)
@@ -149,6 +153,7 @@ def assign_themes(df: pd.DataFrame, use_ai: bool) -> pd.DataFrame:
     df["theme"] = df["text_all"].map(keyword_theme)
     if use_ai and api_key():
         left = df[df["theme"].isna() & (df["text"].str.len() >= 25)]
+        left = left.head(200)
         found = llm_classify(left["text"].tolist())
         idx = left.index.tolist()
         for pos, theme in found.items():
@@ -306,8 +311,8 @@ with st.sidebar:
     file = st.file_uploader("Upload reviews CSV", type=["csv"], help="Columns: rating, title, text, date, store (optional)")
     weeks = st.slider("Weeks of reviews", 4, 12, 12)
     has_key = bool(api_key())
-    use_ai = st.toggle("Use AI (Claude)", value=has_key, disabled=not has_key)
-    st.caption("🤖 AI on" if (has_key and use_ai) else "⚙️ Rule-based mode (no API key set)")
+    use_ai = st.toggle("Use AI (Groq)", value=False, disabled=not has_key)
+    st.caption("🤖 AI on" if (has_key and use_ai) else "⚙️ Rule-based mode (AI off)" if has_key else "⚙️ Rule-based mode (no API key set)")
     st.info("Public reviews only. Usernames, emails, phone numbers and IDs are stripped automatically.")
 
 st.markdown(
