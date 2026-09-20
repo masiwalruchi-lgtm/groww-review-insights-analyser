@@ -10,13 +10,13 @@ Turns 8-12 weeks of public App Store and Play Store reviews into a one-page week
 1. Export fresh public reviews to a CSV with columns: rating, title, text, date, store.
 2. Upload it in the sidebar, or replace data/reviews.csv.
 3. Pick 8-12 weeks.
-4. Press *Generate weekly note, then **Generate email*.
+4. Press **Generate weekly note**, then **Generate email**.
 
 ## Run locally
     pip install -r requirements.txt
     streamlit run app.py
 
-*Optional AI mode:* set ANTHROPIC_API_KEY as an environment variable or Streamlit secret. Without it, the app uses rule-based grouping.
+*Optional AI mode:* uses Groq (openai/gpt-oss-20b) for the weekly note and theme explainations. Set GROQ_API_KEY as an environment variable or Streamlit secret. Without it, the app uses rule-based grouping.
 
 ## Theme legend
 - *Order Execution:* trigger/SL/limit orders, price mismatch, rejected or delayed trades, charges
