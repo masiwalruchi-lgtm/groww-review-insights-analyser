@@ -250,7 +250,7 @@ def build_note_ai(df, stats):
     used = set()
     cands = [q for t in top.index for q in [pick_quote(df, t, used, 140)] if q]
     prompt = (
-        f"Write a one-page weekly app review note for Groww, {MAX_WORDS} words or fewer, plain text, scannable, neutral tone.\n"
+        f"Write a one-page weekly app review note for Groww, {MAX_WORDS} words or fewer, plain text only, scannable, neutral tone. Do not use markdown symbols such as ** or #. Do not include priority scores or a word count line.\n"
         "Sections: TOP 3 THEMES (with review counts), USER QUOTES (3, verbatim from the list, no PII), ACTION IDEAS (3).\n\n"
         f"Window: {df['date'].min().date()} to {df['date'].max().date()}, {len(df)} reviews.\n"
         f"Theme stats:\n{top.round(2).to_string()}\n\nCandidate quotes:\n" + "\n".join(cands)
